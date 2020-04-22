@@ -7,8 +7,6 @@ const url = process.env.DB_URL;
 
 const dbName = 'my_crud_project_ah';
 const colName = "tc_provinces";
- 
-
 const settings = { useUnifiedTopology: true }
 
 const invalidCountry = (country) => {
@@ -40,9 +38,7 @@ const getProvince = () => {
         
         MongoClient.connect(url, settings, function(err, client) {
             if(err){
-                //assert.equal(null, err);
                 reject(err);
-
             } else {
                 console.log("Connected successfully to GET Province");
                 const db = client.db(dbName);
@@ -64,25 +60,25 @@ const getProvince = () => {
     return iou;
 }
 
-const addCountry = (countries) => {
+const addProvince = (province) => {
     
    
     const iou = new Promise ((resolve,reject) => {
-        if (!Array.isArray(countries)){
-            reject({ error: "Need to send an array of countries"})
+        if (!Array.isArray(province)){
+            reject({ error: "Need to send an array of province info"})
          
         } else {
-            const invalidCountries = countries.filter((country) => {
-                const check = invalidCountry(country);
+            const invalidProvince = countries.filter((country) => {
+                const check = invalidProvince(province);
                 if(check){
-                    country.invalid = check;
+                    province.invalid = check;
                 }
-                return country.invalid;
+                return province.invalid;
             });
-            if (invalidCountries.length > 0){
+            if (invalidProvince.length > 0){
                 reject({
-                    error: "Some Countries were invalid",
-                    data: invalidCountries
+                    error: "Some entries were invalid",
+                    data: invalidProvince
                 })
             }else{
 
@@ -94,10 +90,10 @@ const addCountry = (countries) => {
                     console.log("Connected successfully to server to POST Article");
                     const db = client.db(dbName);
                     const collection = db.collection(colName)
-                    countries.forEach((country) => {
-                            country.dateAdded = new Date(Date.now()).toUTCString(); 
-                    });
-                    const results = await collection.insertMany(countries); 
+                    // province.forEach((province) => {
+                    //         province.dateAdded = new Date(Date.now()).toUTCString(); 
+                    // });
+                    const results = await collection.insertMany(province); 
                     resolve(results.ops);
                 }
             
@@ -196,7 +192,7 @@ const deleteCountry = (id) => {
 
 module.exports = { 
     getProvince,
-    addCountry,
+    addProvince,
     updateCountry,
     deleteCountry
 }
