@@ -12,6 +12,13 @@ router.get('/', async function(req, res, next) {
   };
 });
 
+//"READ" Phase- not sure but here goes
+
+router.post('/' async function(req, res, next){
+
+})
+
+// READ Phase
 
 
 module.exports = router;

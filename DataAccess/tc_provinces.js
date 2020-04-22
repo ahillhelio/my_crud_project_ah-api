@@ -68,7 +68,7 @@ const addProvince = (province) => {
             reject({ error: "Need to send an array of province info"})
          
         } else {
-            const invalidProvince = countries.filter((country) => {
+            const invalidProvince = province.filter((country) => {
                 const check = invalidProvince(province);
                 if(check){
                     province.invalid = check;
