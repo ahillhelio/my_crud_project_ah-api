@@ -9,12 +9,12 @@ const dbName = 'my_crud_project_ah';
 const colName = "tc_provinces";
 const settings = { useUnifiedTopology: true }
 
-const invalidCountry = (country) => {
+const invalidProvince = (province) => {
         let result ;
-        if(!country.countryname){
-            result = "Requires a Country Name";
-        } else if (!country.walkinghours){
-            result = "Requires Walking Hours";
+        if(!province.il){
+            result = "Requires a Name";
+        } else if (typeof province.visited !="boolean"){
+            result = "Has this province been visited?";
         } //else if (!validURL(country.link)) {
            // result = "Link not valid URL";
         //}
@@ -60,7 +60,7 @@ const getProvince = () => {
     return iou;
 }
 
-const addProvince = (province) => {
+const createProvince = (province) => {
     
    
     const iou = new Promise ((resolve,reject) => {
@@ -68,17 +68,17 @@ const addProvince = (province) => {
             reject({ error: "Need to send an array of province info"})
          
         } else {
-            const invalidProvince = province.filter((country) => {
+            const invalidProvinces = province.filter((province) => {
                 const check = invalidProvince(province);
                 if(check){
                     province.invalid = check;
                 }
                 return province.invalid;
             });
-            if (invalidProvince.length > 0){
+            if (invalidProvinces.length > 0){
                 reject({
                     error: "Some entries were invalid",
-                    data: invalidProvince
+                    data: invalidProvinces
                 })
             }else{
 
@@ -192,7 +192,7 @@ const deleteCountry = (id) => {
 
 module.exports = { 
     getProvince,
-    addProvince,
+    createProvince,
     updateCountry,
     deleteCountry
 }
