@@ -90,11 +90,17 @@ const createProvince = (province) => {
                     console.log("Connected successfully to server to POST Article");
                     const db = client.db(dbName);
                     const collection = db.collection(colName)
-                    // province.forEach((province) => {
-                    //         province.dateAdded = new Date(Date.now()).toUTCString(); 
-                    // });
-                    const results = await collection.insertMany(province); 
-                    resolve(results.ops);
+                   //NOT SURE ABOUT BELOW:
+                   collection.insertMany (province, (err, result) => {
+                       if(err){
+                           reject(err);
+                       } else {
+                           resolve(result.ops); 
+                           client.close();
+                       }
+                   })
+
+
                 }
             
 

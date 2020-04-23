@@ -18,7 +18,7 @@ router.get('/', async function(req, res, next) {
 //"READ" Phase- not sure but here goes
 
 router.post('/', async function(req, res, next) {
-
+   console.log(req.body);
       try {
             const data = await createProvince(req.body); 
             res.send(data);
