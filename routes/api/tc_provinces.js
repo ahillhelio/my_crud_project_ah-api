@@ -1,6 +1,8 @@
 const express = require('express');
 const {getProvince} = require('../../DataAccess/tc_provinces');
-const{createProvince} = require('../../DataAccess/tc_provinces'); //WIP
+const{createProvince} = require('../../DataAccess/tc_provinces'); 
+const{deleteProvince} = require('../../DataAccess/tc_provinces'); 
+const{updateProvince} = require ('../../DataAccess/tc_provinces');
 const router = express.Router();
 
 router.get('/', async function(req, res, next) {
@@ -29,7 +31,32 @@ router.post('/', async function(req, res, next) {
       };
     });
 
-// READ Phase
+router.put('/:id', async function(req, res, next) {
+   console.log(req.body);
+      try {
+            const data = await updateProvince(req.params.id, req.body); 
+            res.send(data);
+            
+      } catch (err) {
+            console.log(err);
+            res.status(500).send  ("Error-Internal Server Issue. A total failure.");
+      };
+});
+
+
+
+
+router.delete('/:id', async function(req, res, next) { // COULD IT BE the '/'? 
+      console.log(req.body);
+         try {
+               const data = await deleteProvince(req.params.id); 
+               res.send(data);
+               
+         } catch (err) {
+               console.log(err);
+               res.status(500).send  ("Error-Internal Server Issue. A total failure.");
+         };
+      });
 
 
 module.exports = router;

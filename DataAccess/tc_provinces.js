@@ -110,95 +110,83 @@ const createProvince = (province) => {
     });
     return iou;
 }
-
-const updateCountry = (id, country) => {
+//const updateProvinceValues = (province) => {};
+const updateProvince= (id, province) => {
     const iou = new Promise((resolve,reject) => {
-        if(country.link) {
-                if(!validURL(country.link)){
-                    country.invalid = "link not validURL";
-                    reject(country);
-                }
-            }
-            MongoClient.connect(url, settings, function(err, client) {
-                if(err){
-                    reject(err);
+            MongoClient.connect(url, settings, function(err, client) { // appears as "DB_URL" in tutorial but worked only as "url" in my Delete
+                if(err){ //telling the computer to reject it if an error is found, but if not and all goes well, tell us in a console log 
+                    reject(err); // that it has connected; then, access the database by name and then the collection on Mongo. 
                 }else{
-                    console.log("connected successfully to server to PATCH a Country");
+                    console.log("Connected to server- gonna update this Province like it's 1999!");
                     const db = client.db(dbName);
                     const collection = db.collection(colName);
-                    try {
-                        const _id = new ObjectID(id);
-                        collection.updateOne({_id},
-                            { $set: {...country} },
-                            function(err, data){
-                                if(err) {
-                                    reject(err);
-                                }else{
-                                    if(data.result.n > 0){
-                                        collection.find({_id}).toArray(
-                                            function(err, docs){
-                                                if(err){
-                                                    reject(err);
-                                                } else {
-                                                    resolve(docs[0]);
-                                                };
-                                        })
-                                        
-                                    }else{
-                                        resolve({error: "Nothing Updated"});
-                                    }
-                                    
-                                }
-                            });
-
-                    } catch (err) {
-                        console.log(err);
-                        reject({error: "ID has to be in Object ID format"});
-                    }
+                    collection.replaceOne ({_id: ObjectID(id)}, // access the Mongo-generated ID and prepare to make changes
+                        province,
+                        { upsert: true }, //this basically says "provided you are doing an upsert, that is"
+                        (err, result) => { // from here through line 133, the final pieces of the process are explained
+                            if(err){
+                                reject(err); //once you're in the database, reject again if there are any problems
+                            }else{
+                                resolve({ updated_id:id }); //but if not,  show that the changes have been made. refer back to ID in original params on line 114
+                                client.close(); // once that has been resolved. The client is "the client of the database"- close the client to the DB because the task is complete, ie the info has been accessed and processed
+                            }
+                        }
+                    );
                 }
+            })    
+    })
+    return iou;            
+};
 
-            });
-    });
-
-    return iou;
-}
-
-const deleteCountry = (id) => {
-    const iou = new Promise ((resolve,reject) => {
-        MongoClient.connect(url, settings, async function (err, client) {
+const deleteProvince = async (id) => {
+    const iou = new Promise ((resolve, reject) => {
+        MongoClient.connect(url, settings, async function (err, client) { //changed "url" to "DB_URL" 
+        //function or async function?
             if(err){
                 reject(err);
             } else {
-                console.log("connected successfully to server to DELETE a Country");
+                console.log("Connected to DataBase Server to DELETE Province");
                 const db = client.db(dbName);
                 const collection = db.collection(colName);
-               try {
-                const _id = new ObjectID(id);
-                collection.findOneAndDelete({ _id }, function(err, data){
-                    if(err){
+                console.log(collection)
+                collection.deleteMany({_id: ObjectID(id) }, (err, result) => {
+                    if (err) {
                         reject(err);
-                    }else {
-                        if(data.lastErrorObject.n > 0){
-                            resolve(data.value);
-                        } else{
-                            resolve({error: "ID doesn't exist"});
-                        }
+                    } else{
+                         resolve(true);
+                         client.close(); 
                     }
-                });
-             } catch(err){
-                 console.log(err);
-                 reject({error: "ID has to be in ObjectID format"});
-             }
+                }) 
+            //     //tutorial has "deleteOne"
+            //    try {
+            //     const _id = new ObjectID(id);
+            //     collection.findOneAndDelete({ _id }, function(err, data){
+            //         if(err){
+            //             reject(err);
+            //         }else {
+            //             if(data.lastErrorObject.n > 0){
+            //                 resolve(data.value);
+            //             } else{
+            //                 resolve({error: "ID doesn't exist"});
+            //             }
+            //         }
+            //     });
+            //  } catch(err){
+            //      console.log(err);
+            //      reject({error: "ID has to be in ObjectID format"});
+            //  }
             }
         })    
-    });
+    })
 
     return iou;
-}
+};
 
 module.exports = { 
     getProvince,
     createProvince,
-    updateCountry,
-    deleteCountry
+    updateProvince,
+    deleteProvince
+   //updateProvinceValues
+    
 }
